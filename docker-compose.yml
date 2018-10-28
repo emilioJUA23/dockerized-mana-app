@@ -1,0 +1,58 @@
+# version: '3'
+
+# services:
+
+#   # redis:
+#   #   image: redis
+#   #   container_name: cache
+#   #   ports:
+#   #     - 6379:6379
+  
+#   server:
+#     container_name: "mana-app-server"
+#     build: ./mongo-mana-app-server
+#     command: npm start
+#     volumes:
+#       - .:/usr/app/
+#       - /usr/app/node_modules
+#     depends_on:
+#       - redis
+#     environment:
+#     - REDIS_URL=redis://redis
+#     db:
+#       image: mongo:latest
+#       ports:
+#        - 27017:27017
+#       volumes:
+#       - mongodata:/data/db
+version: "2"
+services:
+  angular:
+    build: ./mana-app2
+    container_name: "mana-app-front-end"
+    ports:
+      - 4200:4200
+  redis:
+    image: redis
+    container_name: cache
+    ports:
+      - 6379:6379
+  web:
+    links:
+      - "db:database"
+    container_name: "mana-app-server"
+    build: ./mongo-mana-app-server
+    volumes:
+      - .:/usr/app/
+      - /usr/app/node_modules
+    ports:
+      - "3000:3000"
+    depends_on:
+      - redis
+    environment:
+    - REDIS_URL=redis://redis
+  db:
+    image: mongo
+    container_name: "mongodb"
+    ports:
+      - "27017:27017"
